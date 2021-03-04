@@ -81,7 +81,7 @@ public class HttpServer implements Runnable {
                 }
             }
 
-            String resourcesName = "resources/";
+            String resourcesName = "src/main/resources/";
             nomFichier = resourcesName + nomFichier;
 
             System.out.println(nomFichier);
