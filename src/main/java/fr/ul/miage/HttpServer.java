@@ -3,28 +3,28 @@ package fr.ul.miage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.Logger;
 
 public class HttpServer implements Runnable {
 
-    static final int port = 9003;
-    private Socket socket;
-    private String homepageRequest = "GET / HTTP/1.1";
-    private String homepage = "index.html";
-    private String resourcesName = "resources/";
+    static final int PORT = 8000;
+    private final Socket socket;
 
     public HttpServer(Socket socket){
         this.socket = socket;
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Main lauched with port " +port);
-        ServerSocket srv = new ServerSocket(port);
+        System.out.println("Main lauched with port " + PORT);
+        ServerSocket srv = new ServerSocket(PORT);
+
         while(true){
             HttpServer myownserver = new HttpServer(srv.accept());
-            System.out.println("Server tarted on port " +port);
+            System.out.println("Server started on port " + PORT);
             //Un thread accueille un client
             Thread thread = new Thread(myownserver);
             thread.start();
@@ -37,12 +37,11 @@ public class HttpServer implements Runnable {
         String requete;
         String[] partie;
         byte[] tableau;
-        String index = "GET / HTTP/1.1";
         String nomFichier;
         BufferedReader rd;
 
         try{
-            rd = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf8"));
+            rd = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             DataOutputStream data = new DataOutputStream(socket.getOutputStream());
             DataInputStream fichier;
             requete = null;
@@ -57,6 +56,7 @@ public class HttpServer implements Runnable {
                 }
             }
             //SI on ne met pas d'URL on donne la homepage
+            String homepageRequest = "GET / HTTP/1.1";
             if(requete.equals(homepageRequest)){
                 nomFichier = "index.html";
             } else{
@@ -77,6 +77,8 @@ public class HttpServer implements Runnable {
                     nomFichier = nomFichier.substring(1);
                 }
             }
+            //    private String homepage = "index.html";
+            String resourcesName = "resources/";
             nomFichier = resourcesName + nomFichier;
 
             System.out.println(nomFichier);
