@@ -60,7 +60,7 @@ public class HttpServer implements Runnable {
             if(requete.equals(homepageRequest)){
                 nomFichier = "index.html";
             } else{
-                partie = requete.split(" ")
+                partie = requete.split(" ");
 
                 nomFichier = partie[1];
 
@@ -73,7 +73,7 @@ public class HttpServer implements Runnable {
                     }
                 }
 
-                if(nomFichier.startsWith("/") && (count == 1  count ==2){
+                if(nomFichier.startsWith("/") && (count == 1 || count == 2)){
                     nomFichier = nomFichier.substring(1);
                 }
             }
