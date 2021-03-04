@@ -1,5 +1,7 @@
 package fr.ul.miage;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.logging.Logger;
+
 
 public class HttpServer implements Runnable {
 
@@ -19,15 +21,16 @@ public class HttpServer implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Main lauched with port " + PORT);
-        ServerSocket srv = new ServerSocket(PORT);
 
-        while(true){
-            HttpServer myownserver = new HttpServer(srv.accept());
-            System.out.println("Server started on port " + PORT);
-            //Un thread accueille un client
-            Thread thread = new Thread(myownserver);
-            thread.start();
+        System.out.println("Main lauched with port " + PORT);
+        try(ServerSocket srv = new ServerSocket(PORT)) {
+            while (true) {
+                HttpServer myownserver = new HttpServer(srv.accept());
+                System.out.println("Server started on port " + PORT);
+                //Un thread accueille un client
+                Thread thread = new Thread(myownserver);
+                thread.start();
+            }
         }
     }
 
@@ -77,7 +80,7 @@ public class HttpServer implements Runnable {
                     nomFichier = nomFichier.substring(1);
                 }
             }
-            //    private String homepage = "index.html";
+
             String resourcesName = "resources/";
             nomFichier = resourcesName + nomFichier;
 
