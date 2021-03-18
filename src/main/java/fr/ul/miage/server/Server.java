@@ -3,11 +3,14 @@ package fr.ul.miage.server;
 import fr.ul.miage.api.Controller;
 import fr.ul.miage.parser.Parser;
 import fr.ul.miage.parser.Request;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -40,6 +43,7 @@ public class Server implements Runnable{
         InputStream in = null;
         OutputStream out = null;
         try {
+            InetAddress adrLocale = InetAddress.getLocalHost();
             in = socket.getInputStream();
             out = socket.getOutputStream();
             bfRead = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
@@ -47,7 +51,7 @@ public class Server implements Runnable{
             int skip = 0;
             while (rawRequest == null) {
                 rawRequest = bfRead.readLine();
-                log.debug("Request is : " + rawRequest);
+                log.debug("Client IP : " + adrLocale.getHostAddress() +", request : "+ rawRequest);
                 skip++;
                 if (skip == 5) {
                     return;
