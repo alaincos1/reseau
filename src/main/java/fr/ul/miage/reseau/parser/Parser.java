@@ -1,4 +1,4 @@
-package fr.ul.miage.parser;
+package fr.ul.miage.reseau.parser;
 
 public class Parser {
     public static Request parseRequest(String rawRequest){

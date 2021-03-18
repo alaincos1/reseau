@@ -1,6 +1,6 @@
-package fr.ul.miage.dto;
+package fr.ul.miage.reseau.dto;
 
-import fr.ul.miage.exception.HttpStatus;
+import fr.ul.miage.reseau.exception.HttpStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

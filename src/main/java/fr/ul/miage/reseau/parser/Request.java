@@ -1,4 +1,4 @@
-package fr.ul.miage.parser;
+package fr.ul.miage.reseau.parser;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;

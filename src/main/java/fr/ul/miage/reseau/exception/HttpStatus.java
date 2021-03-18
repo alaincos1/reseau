@@ -1,4 +1,4 @@
-package fr.ul.miage.exception;
+package fr.ul.miage.reseau.exception;
 
 public enum HttpStatus {
     NOT_FOUND(404, "NOT_FOUND"),

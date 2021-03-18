@@ -1,4 +1,4 @@
-package fr.ul.miage.exception;
+package fr.ul.miage.reseau.exception;
 
 public abstract class ApiException extends RuntimeException {
     private final String errorCode;

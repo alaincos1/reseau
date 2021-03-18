@@ -1,7 +1,7 @@
-package fr.ul.miage.api;
+package fr.ul.miage.reseau.api;
 
-import fr.ul.miage.exception.ApiException;
-import fr.ul.miage.exception.ContentTypeNotFoundException;
+import fr.ul.miage.reseau.exception.ApiException;
+import fr.ul.miage.reseau.exception.ContentTypeNotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,8 +1,8 @@
-package fr.ul.miage.server;
+package fr.ul.miage.reseau.server;
 
-import fr.ul.miage.api.Controller;
-import fr.ul.miage.parser.Parser;
-import fr.ul.miage.parser.Request;
+import fr.ul.miage.reseau.api.Controller;
+import fr.ul.miage.reseau.parser.Parser;
+import fr.ul.miage.reseau.parser.Request;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;

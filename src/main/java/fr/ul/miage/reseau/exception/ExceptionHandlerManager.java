@@ -1,6 +1,6 @@
-package fr.ul.miage.exception;
+package fr.ul.miage.reseau.exception;
 
-import fr.ul.miage.dto.JsonErrorResponseDto;
+import fr.ul.miage.reseau.dto.JsonErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

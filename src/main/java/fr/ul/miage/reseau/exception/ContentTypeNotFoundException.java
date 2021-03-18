@@ -1,4 +1,4 @@
-package fr.ul.miage.exception;
+package fr.ul.miage.reseau.exception;
 
 public class ContentTypeNotFoundException extends ApiException {
     public ContentTypeNotFoundException(String extension) {

@@ -1,14 +1,12 @@
-package fr.ul.miage.api;
+package fr.ul.miage.reseau.api;
 
-import fr.ul.miage.exception.ApiException;
-import fr.ul.miage.exception.ExceptionHandlerManager;
-import fr.ul.miage.parser.Request;
+import fr.ul.miage.reseau.exception.ApiException;
+import fr.ul.miage.reseau.parser.Request;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
