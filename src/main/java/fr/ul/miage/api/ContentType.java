@@ -1,7 +1,13 @@
 package fr.ul.miage.api;
 
+import fr.ul.miage.exception.ApiException;
+import fr.ul.miage.exception.ContentTypeNotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 public enum ContentType {
@@ -16,12 +22,16 @@ public enum ContentType {
     private final String format;
     private final String type;
 
-    public static String getContentType(String extension) {
-        for (ContentType content : values()) {
-            if (StringUtils.equals(content.format,extension)) {
-                return content.type;
-            }
+    public static String getContentType(String extension) throws ApiException {
+        String type = Arrays.asList(values()).stream()
+                .filter(contentType -> StringUtils.equalsAnyIgnoreCase(contentType.format, extension))
+                .map(contentType -> contentType.type)
+                .findFirst()
+                .orElse(null);
+
+        if (StringUtils.isBlank(type)) {
+            throw new ContentTypeNotFoundException(extension);
         }
-        return null;
+        return type;
     }
 }

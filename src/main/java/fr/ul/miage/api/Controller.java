@@ -1,5 +1,7 @@
 package fr.ul.miage.api;
 
+import fr.ul.miage.exception.ApiException;
+import fr.ul.miage.exception.ExceptionHandlerManager;
 import fr.ul.miage.parser.Request;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import java.nio.file.Paths;
 @Slf4j
 @AllArgsConstructor
 public class Controller {
+    private static final Path ERROR_404 = Paths.get("src/main/resources/404.jpg");
     private OutputStream out;
 
     public OutputStream dispatch(Request request){
@@ -30,7 +33,7 @@ public class Controller {
         return out;
     }
 
-    public void get(Request request){
+    public void get(Request request) {
         String resourcesPath = "src/main/resources";
         String filePath = resourcesPath + request.getUrl();
         log.debug(filePath);
@@ -51,7 +54,23 @@ public class Controller {
             log.error(exception.getMessage());
         }
 
-        String contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()));
+        String contentType = null;
+        try {
+            contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()));
+        } catch (ApiException e) {
+            try {
+                content = Files.readAllBytes(ERROR_404);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            feedWrite("HTTP/1.1 404 NOT_FOUND\r\n");
+            feedWrite("Content-length: " + content.length + "\r\n");
+            feedWrite("\r\n");
+            feedWrite(content);
+            log.error(e.getMessage());
+            return;
+        }
+
         feedWrite(("Content-Type: " + contentType+"\r\n"));
 
         try{
