@@ -12,6 +12,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <lombok.version>1.18.16</lombok.version>
+        <project.bindist.dir>${project.basedir}/bindist</project.bindist.dir>
+        <project.main.classname>${project.groupId}.${project.artifactId}.server.Server</project.main.classname>
+        <project.bin.appname>run</project.bin.appname>
     </properties>
 
     <dependencies>
@@ -54,6 +57,54 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <!-- Plugin qui crée le dossier bindist qui contient une distribution binaire -->
+            <!-- ======================================================================== -->
+            <plugin>
+                <!--  create scripts for apps  -->
+                <!--  mvn package | appassembler:assemble  -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.10</version>
+                <configuration>
+                    <assembleDirectory>${project.bindist.dir}</assembleDirectory>
+                    <programs>
+                        <program>
+                            <mainClass>${project.main.classname}</mainClass>
+                            <id>${project.bin.appname}</id>
+                        </program>
+                    </programs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- create a distribution archive -->
+                <!-- mvn install ou assembly:single -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>make-zip</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>zip.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>true</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

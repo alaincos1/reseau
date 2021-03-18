@@ -62,6 +62,7 @@ public class Server implements Runnable{
         Controller controller = new Controller(out);
 
         out = controller.dispatch(request);
+        System.out.println("ok");
 
         try {
             out.flush();
