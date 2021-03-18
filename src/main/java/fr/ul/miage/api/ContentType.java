@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 public enum ContentType {
