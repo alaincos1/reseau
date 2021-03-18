@@ -33,6 +33,7 @@ public class Controller {
     public void get(Request request){
         String resourcesPath = "src/main/resources";
         String filePath = resourcesPath + request.getUrl();
+        log.debug("ICIIIIIIIIIIII" + request.getUrl());
         log.debug(filePath);
         Path path = Paths.get(filePath);
 

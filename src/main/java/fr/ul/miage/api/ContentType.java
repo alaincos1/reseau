@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 @AllArgsConstructor
 public enum ContentType {
     HTML("html","text/html"),
-    CSS("css","text/html"),
+    CSS("css","text/css"),
     JPG("jpg","image/jpeg"),
     JPEG("jpeg","image/jpeg"),
     PNG("png","image/png"),

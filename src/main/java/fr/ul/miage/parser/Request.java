@@ -11,7 +11,7 @@ public class Request {
 
     public Request(String command, String url, String version){
         this.command = command;
-        this.url = StringUtils.equals(url,"/") ? "/index.html" : url;
+        this.url = StringUtils.contains(url,".") ? url : url + "/index.html";
         this.version = version;
     }
 }

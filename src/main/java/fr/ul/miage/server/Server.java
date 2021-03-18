@@ -3,14 +3,12 @@ package fr.ul.miage.server;
 import fr.ul.miage.api.Controller;
 import fr.ul.miage.parser.Parser;
 import fr.ul.miage.parser.Request;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
