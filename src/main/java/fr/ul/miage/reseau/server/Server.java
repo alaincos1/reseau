@@ -1,20 +1,18 @@
-package fr.ul.miage.server;
+package fr.ul.miage.reseau.server;
 
-import fr.ul.miage.api.Controller;
-import fr.ul.miage.parser.Parser;
-import fr.ul.miage.parser.Request;
-import lombok.SneakyThrows;
+import fr.ul.miage.reseau.api.Controller;
+import fr.ul.miage.reseau.parser.Parser;
+import fr.ul.miage.reseau.parser.Request;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
-public class Server implements Runnable{
+public class Server implements Runnable {
     private final Socket socket;
     static final int PORT = 8000;
 
@@ -51,7 +49,7 @@ public class Server implements Runnable{
             int skip = 0;
             while (rawRequest == null) {
                 rawRequest = bfRead.readLine();
-                log.debug("Client IP : " + adrLocale.getHostAddress() +", request : "+ rawRequest);
+                log.debug("Client IP : " + adrLocale.getHostAddress() + ", request : " + rawRequest);
                 skip++;
                 if (skip == 5) {
                     return;
@@ -64,7 +62,6 @@ public class Server implements Runnable{
         Controller controller = new Controller(out);
 
         out = controller.dispatch(request);
-        System.out.println("ok");
 
         try {
             out.flush();

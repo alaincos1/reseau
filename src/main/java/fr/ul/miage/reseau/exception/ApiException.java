@@ -1,11 +1,9 @@
 package fr.ul.miage.reseau.exception;
 
-import fr.ul.miage.server.Server;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
 @Slf4j
 public abstract class ApiException extends RuntimeException {

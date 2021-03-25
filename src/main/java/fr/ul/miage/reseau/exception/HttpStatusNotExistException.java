@@ -1,4 +1,4 @@
-package fr.ul.miage.exception;
+package fr.ul.miage.reseau.exception;
 
 import java.io.OutputStream;
 
