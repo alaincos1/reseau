@@ -33,8 +33,8 @@ public class Controller {
     }
 
     public void get(Request request) {
-        String resourcesPath = "src/main/resources";
-        String filePath = resourcesPath + request.getUrl();
+        String fileName = Domain.getFileName(request.getHost());
+        String filePath = "src/main/resources/" + fileName + request.getUrl();
         log.debug(filePath);
         Path path = Paths.get(filePath);
 
@@ -43,16 +43,11 @@ public class Controller {
             in = new DataInputStream(new FileInputStream(System.getProperty("user.dir") + "/" + filePath));
         } catch (FileNotFoundException exception) {
             log.error(exception.getMessage());
-            throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
+            new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
+            return;
         }
         log.debug("Chemin : " + path.toString());
         byte[] content = null;
-        try {
-            content = Files.readAllBytes(path);
-            feedWrite("HTTP/1.1 200 OK\r\n");
-        } catch (IOException exception) {
-            log.error(exception.getMessage());
-        }
 
         String contentType = null;
         try {
@@ -62,6 +57,13 @@ public class Controller {
             return;
         }
 
+        try {
+            content = Files.readAllBytes(path);
+            feedWrite("HTTP/1.1 200 OK\r\n");
+        } catch (IOException exception) {
+            log.error(exception.getMessage());
+        }
+
         feedWrite(("Content-Type: " + contentType + "\r\n"));
 
         try {
@@ -69,6 +71,7 @@ public class Controller {
         } catch (IOException exception) {
             log.error(exception.getMessage());
         }
+
 
         feedWrite("\r\n");
         feedWrite(content);

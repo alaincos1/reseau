@@ -10,13 +10,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
 public class Server implements Runnable {
     private final Socket socket;
-    static final int PORT = 8000;
+    static final int PORT = 80;
 
     public Server(Socket socket) {
         this.socket = socket;
@@ -47,6 +48,7 @@ public class Server implements Runnable {
             in = socket.getInputStream();
             out = socket.getOutputStream();
             bfRead = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+
             int skip = 0;
             while (request == null) {
                 request = Parser.parseRequest(bfRead.readLine(), bfRead.readLine());
@@ -55,14 +57,11 @@ public class Server implements Runnable {
                 if (skip == 5) {
                     return;
                 }
-                log.debug("4");
             }
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-        log.debug("5");
         Controller controller = new Controller(out);
-
         out = controller.dispatch(request);
 
         try {
@@ -70,6 +69,7 @@ public class Server implements Runnable {
             out.close();
             in.close();
             bfRead.close();
+            socket.close();
         } catch (IOException e) {
             log.error(e.getMessage());
         }

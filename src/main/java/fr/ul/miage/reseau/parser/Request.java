@@ -13,7 +13,7 @@ public class Request {
 
     public Request(String method, String url, String version, String host){
         this.method = method;
-        this.url = url;
+        this.url = (url.equals("/") ? "/index.html" : url);
         this.version = version;
         this.host = host;
     }
