@@ -5,13 +5,16 @@ import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class Request {
-    private String command;
+    private String method;
     private String url;
     private String version;
+    private String host;
 
-    public Request(String command, String url, String version){
-        this.command = command;
-        this.url = StringUtils.contains(url,".") ? url : url + "/index.html";
+    public Request(String method, String url, String version, String host){
+        this.method = method;
+        //this.url = StringUtils.contains(url,".") ? url : url + "/index.html";
+        this.url = url;
         this.version = version;
+        this.host = host;
     }
 }

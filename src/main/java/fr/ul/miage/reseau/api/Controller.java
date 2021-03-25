@@ -19,7 +19,7 @@ public class Controller {
     private OutputStream out;
 
     public OutputStream dispatch(Request request) {
-        switch (request.getCommand()) {
+        switch (request.getMethod()) {
             case "GET":
                 get(request);
                 break;
