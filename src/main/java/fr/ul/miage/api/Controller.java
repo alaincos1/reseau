@@ -1,14 +1,13 @@
 package fr.ul.miage.api;
 
 import fr.ul.miage.exception.ApiException;
-import fr.ul.miage.exception.ExceptionHandlerManager;
+import fr.ul.miage.exception.FilePathNotFoundException;
 import fr.ul.miage.parser.Request;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,8 +18,8 @@ public class Controller {
     private static final Path ERROR_404 = Paths.get("src/main/resources/404.jpg");
     private OutputStream out;
 
-    public OutputStream dispatch(Request request){
-        switch(request.getCommand()){
+    public OutputStream dispatch(Request request) {
+        switch (request.getCommand()) {
             case "GET":
                 get(request);
                 break;
@@ -40,68 +39,60 @@ public class Controller {
         Path path = Paths.get(filePath);
 
         DataInputStream in = null;
-        try{
+        try {
             in = new DataInputStream(new FileInputStream(System.getProperty("user.dir") + "/" + filePath));
-        }catch(FileNotFoundException exception){
+        } catch (FileNotFoundException exception) {
             log.error(exception.getMessage());
+            throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
         }
         log.debug("Chemin : " + path.toString());
         byte[] content = null;
-        try{
+        try {
             content = Files.readAllBytes(path);
             feedWrite("HTTP/1.1 200 OK\r\n");
-        }catch(IOException exception){
+        } catch (IOException exception) {
             log.error(exception.getMessage());
         }
 
         String contentType = null;
         try {
-            contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()));
+            contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
         } catch (ApiException e) {
-            try {
-                content = Files.readAllBytes(ERROR_404);
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-            feedWrite("HTTP/1.1 404 NOT_FOUND\r\n");
-            feedWrite("Content-length: " + content.length + "\r\n");
-            feedWrite("\r\n");
-            feedWrite(content);
             log.error(e.getMessage());
             return;
         }
 
-        feedWrite(("Content-Type: " + contentType+"\r\n"));
+        feedWrite(("Content-Type: " + contentType + "\r\n"));
 
-        try{
+        try {
             feedWrite(("Content-Length: " + in.available() + "\r\n"));
-        }catch(IOException exception){
+        } catch (IOException exception) {
             log.error(exception.getMessage());
         }
 
         feedWrite("\r\n");
         feedWrite(content);
 
-        try{
+        try {
             in.close();
-        }catch(IOException exception){
+        } catch (IOException exception) {
             log.error(exception.getMessage());
         }
     }
 
-    public OutputStream post(Request request){
+    public OutputStream post(Request request) {
         return null;
     }
 
-    public void feedWrite(byte[] data){
-        try{
+    public void feedWrite(byte[] data) {
+        try {
             out.write(data);
-        }catch(IOException exception){
-            log.error(exception.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
         }
     }
 
-    public void feedWrite(String data){
+    public void feedWrite(String data) {
         feedWrite(data.getBytes());
     }
 
