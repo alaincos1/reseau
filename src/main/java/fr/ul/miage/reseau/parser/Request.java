@@ -1,9 +1,10 @@
 package fr.ul.miage.reseau.parser;
 
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
+import lombok.ToString;
 
 @Data
+@ToString
 public class Request {
     private String method;
     private String url;
@@ -12,7 +13,6 @@ public class Request {
 
     public Request(String method, String url, String version, String host){
         this.method = method;
-        //this.url = StringUtils.contains(url,".") ? url : url + "/index.html";
         this.url = url;
         this.version = version;
         this.host = host;

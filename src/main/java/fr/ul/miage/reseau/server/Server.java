@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class Server implements Runnable {
@@ -36,29 +38,29 @@ public class Server implements Runnable {
 
     public void run() {
         log.debug("New thread");
-        String rawRequest = null;
         BufferedReader bfRead = null;
         InputStream in = null;
         OutputStream out = null;
+        Request request = null;
         try {
             InetAddress adrLocale = InetAddress.getLocalHost();
             in = socket.getInputStream();
             out = socket.getOutputStream();
             bfRead = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-
             int skip = 0;
-            while (rawRequest == null) {
-                rawRequest = bfRead.readLine();
-                log.debug("Client IP : " + adrLocale.getHostAddress() + ", request : " + rawRequest);
+            while (request == null) {
+                request = Parser.parseRequest(bfRead.readLine(), bfRead.readLine());
+                log.info("Ip du client : " +adrLocale.getHostAddress() + " Requête : "+request.toString());
                 skip++;
                 if (skip == 5) {
                     return;
                 }
+                log.debug("4");
             }
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-        Request request = Parser.parseRequest(rawRequest);
+        log.debug("5");
         Controller controller = new Controller(out);
 
         out = controller.dispatch(request);
