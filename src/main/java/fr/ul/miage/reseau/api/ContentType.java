@@ -12,17 +12,17 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Getter
 public enum ContentType {
-    HTML("html","text/html"),
-    CSS("css","text/css"),
-    JS("js","text/javascript"),
-    JPG("jpg","image/jpeg"),
-    JPEG("jpeg","image/jpeg"),
-    PNG("png","image/png"),
-    ICO("ico","image/x-icon"),
-    GIF("gif","image/gif"),
-    TTF("ttf","font/ttf"),
-    WOFF("woff","font/woff"),
-    WOFF2("woff2","font/woff2");
+    HTML("html", "text/html"),
+    CSS("css", "text/css"),
+    JS("js", "text/javascript"),
+    JPG("jpg", "image/jpeg"),
+    JPEG("jpeg", "image/jpeg"),
+    PNG("png", "image/png"),
+    ICO("ico", "image/x-icon"),
+    GIF("gif", "image/gif"),
+    TTF("ttf", "font/ttf"),
+    WOFF("woff", "font/woff"),
+    WOFF2("woff2", "font/woff2");
 
     private final String format;
     private final String type;
