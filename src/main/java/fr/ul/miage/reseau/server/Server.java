@@ -10,23 +10,31 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 @Slf4j
 public class Server implements Runnable {
     private final Socket socket;
-    static final int PORT = 80;
+    private static int port = 0;
+    private static String repositoryPath;
 
     public Server(Socket socket) {
         this.socket = socket;
     }
 
     public static void main(String[] args) throws IOException {
+        File file = new File("config.properties");
+        Properties properties = new Properties();
+        properties.load(new FileInputStream(file));
 
-        log.debug("Main lauched with port " + PORT);
-        try (ServerSocket srv = new ServerSocket(PORT)) {
+        port = Integer.valueOf(properties.getProperty("port"));
+        repositoryPath = properties.getProperty("repository");
+        log.debug("Main lauched with port " + port);
+        try (ServerSocket srv = new ServerSocket(port)) {
             while (true) {
                 Server myOwnServer = new Server(srv.accept());
-                log.debug("Server started on port " + PORT);
+                log.debug("Server started on port " + port);
                 //Un thread accueille un client
                 Thread thread = new Thread(myOwnServer);
                 thread.start();
@@ -35,7 +43,6 @@ public class Server implements Runnable {
     }
 
     public void run() {
-
         log.debug("New thread");
         BufferedReader bfRead = null;
         InputStream in = null;
@@ -59,7 +66,7 @@ public class Server implements Runnable {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-        Controller controller = new Controller(out);
+        Controller controller = new Controller(out, repositoryPath);
         controller.dispatch(request);
         try {
             in.close();

@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 @AllArgsConstructor
 public class Controller {
     private final OutputStream out;
+    private String repositoryPath;
 
     public void dispatch(Request request) {
         switch (request.getMethod()) {
@@ -37,18 +38,17 @@ public class Controller {
 
     public void get(Request request) {
         String fileName = Domain.getFileName(request.getHost());
-        String filePath = "src/main/resources/" + fileName + request.getUrl();
-        log.debug(filePath);
+        String filePath = repositoryPath + "/" +fileName + request.getUrl();
         Path path = Paths.get(filePath);
         DataInputStream in = null;
+
         try {
-            in = new DataInputStream(new FileInputStream(System.getProperty("user.dir") + "/" + filePath));
+            in = new DataInputStream(new FileInputStream(filePath));
         } catch (FileNotFoundException exception) {
             log.error(exception.getMessage());
             throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
         }
-        log.debug("Chemin : " + path.toString());
-
+        log.debug("Chemin : " + filePath.toString());
 
         ContentType contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
         HttpStatus httpStatus = null;
