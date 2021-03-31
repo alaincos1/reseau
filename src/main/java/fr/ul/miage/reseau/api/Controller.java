@@ -42,15 +42,17 @@ public class Controller {
         Path path = Paths.get(filePath);
         DataInputStream in = null;
 
+        ContentType contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
+
         try {
             in = new DataInputStream(new FileInputStream(filePath));
         } catch (FileNotFoundException exception) {
             log.error(exception.getMessage());
             throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
         }
-        log.debug("Chemin : " + filePath.toString());
+        log.debug("Chemin : " + path.toString());
 
-        ContentType contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
+
         HttpStatus httpStatus = null;
         byte[] content = null;
         try {
@@ -67,8 +69,14 @@ public class Controller {
             log.error(exception.getMessage());
         }
 
-        Answer answerRequest = Answer.builder().request(request).contentLength(contentLength).contentType(contentType).httpStatus(httpStatus).content(content).build();
-        sendAnswer(answerRequest);
+        Answer answerRequest = Answer.builder()
+                .contentLength(contentLength)
+                .contentType(contentType)
+                .httpStatus(httpStatus)
+                .content(content)
+                .out(out)
+                .build();
+        answerRequest.send();
 
         try {
             in.close();
@@ -80,31 +88,4 @@ public class Controller {
     public OutputStream post(Request request) {
         return null;
     }
-
-    public void sendAnswer(Answer answer) {
-        feedWrite("HTTP/1.1"+ answer.getHttpStatus().getValue() + " " + answer.getHttpStatus().getReasonPhrase() +"\r\n");
-        feedWrite(("Content-Type: " + answer.getContentType().getType() + "\r\n"));
-        feedWrite(("Content-Length: " + answer.getContentLength() + "\r\n"));
-        feedWrite("\r\n");
-        feedWrite(answer.getContent());
-        try {
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-    }
-
-    public void feedWrite(byte[] data) {
-        try {
-            out.write(data);
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-    }
-
-    public void feedWrite(String data) {
-        feedWrite(data.getBytes());
-    }
-
 }

@@ -11,7 +11,7 @@ public class Request {
     private String version;
     private String host;
 
-    public Request(String method, String url, String version, String host){
+    public Request(String method, String url, String version, String host) {
         this.method = method;
         this.url = (url.equals("/") ? "/index.html" : url);
         this.version = version;

@@ -51,18 +51,18 @@ public class Server implements Runnable {
         try {
             InetAddress adrLocale = InetAddress.getLocalHost();
             in = socket.getInputStream();
-            out = socket.getOutputStream();
             bfRead = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
             int skip = 0;
             while (request == null) {
                 request = Parser.parseRequest(bfRead.readLine(), bfRead.readLine());
-                log.info("Ip du client : " +adrLocale.getHostAddress() + " Requête : "+request.toString());
+                log.info("Ip du client : " + adrLocale.getHostAddress() + " Requête : " + request.toString());
                 skip++;
                 if (skip == 5) {
                     return;
                 }
             }
+            out = socket.getOutputStream();
         } catch (IOException e) {
             log.error(e.getMessage());
         }

@@ -1,38 +1,27 @@
 package fr.ul.miage.reseau.exception;
 
+import fr.ul.miage.reseau.api.ContentType;
+import fr.ul.miage.reseau.parser.Answer;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
 @Slf4j
 public abstract class ApiException extends RuntimeException {
-    public ApiException(String errorCode, String message, OutputStream out) {
+    public ApiException(String errorCode, String message, OutputStream out, HttpStatus httpStatus) {
         super(message);
 
-        generateError(errorCode, message, null, out);
+        generateError(message, out, httpStatus);
     }
 
-    public ApiException(String errorCode, String message, Integer value, OutputStream out) {
-        super(message);
-
-        generateError(errorCode, message, value, out);
-    }
-
-    private void generateError(String errorCode, String message, Integer value, OutputStream out) {
-        Integer realValue = value != null ? value : HttpStatus.getRealErrorCode(errorCode, out);
-        String header = "HTTP/1.1 " + realValue + " " + errorCode;
-
-        try {
-            out.write((header + "\r\n").getBytes());
-            out.write(("Content-Length:" + (message.length() + 1) + "\r\n").getBytes());
-            out.write("\r\n".getBytes());
-            out.write(message.getBytes());
-            out.flush();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            log.debug("here");
-        }
-
+    private void generateError(String message, OutputStream out, HttpStatus httpStatus) {
+        Answer answer = Answer.builder()
+                .contentLength(message.length())
+                .content(message.getBytes())
+                .contentType(ContentType.HTML)
+                .httpStatus(httpStatus)
+                .out(out)
+                .build();
+        answer.send();
     }
 }
