@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 @Slf4j
 @AllArgsConstructor
 public class Controller {
-    private static final Path ERROR_404 = Paths.get("src/main/resources/404.jpg");
     private OutputStream out;
 
     public OutputStream dispatch(Request request) {
@@ -43,8 +42,7 @@ public class Controller {
             in = new DataInputStream(new FileInputStream(System.getProperty("user.dir") + "/" + filePath));
         } catch (FileNotFoundException exception) {
             log.error(exception.getMessage());
-            new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
-            return;
+            throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
         }
         log.debug("Chemin : " + path.toString());
         byte[] content = null;
