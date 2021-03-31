@@ -25,7 +25,7 @@ public abstract class ApiException extends RuntimeException {
 
         try {
             out.write((header + "\r\n").getBytes());
-             out.write(("Content-Length:" + (message.length() + 1) + "\r\n").getBytes());
+            out.write(("Content-Length:" + (message.length() + 1) + "\r\n").getBytes());
             out.write("\r\n".getBytes());
             out.write(message.getBytes());
             out.flush();

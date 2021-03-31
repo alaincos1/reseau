@@ -5,7 +5,8 @@ import java.util.Arrays;
 
 public enum HttpStatus {
     NOT_FOUND(404, "NOT_FOUND"),
-    BAD_REQUEST(400, "BAD_REQUEST");
+    BAD_REQUEST(400, "BAD_REQUEST"),
+    OK(200, "OK");
 
     private final Integer value;
     private final String reasonPhrase;
