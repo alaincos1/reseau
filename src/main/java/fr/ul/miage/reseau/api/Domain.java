@@ -2,7 +2,6 @@ package fr.ul.miage.reseau.api;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.Arrays;
 
 @AllArgsConstructor

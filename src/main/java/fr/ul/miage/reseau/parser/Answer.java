@@ -3,14 +3,16 @@ package fr.ul.miage.reseau.parser;
 import fr.ul.miage.reseau.api.ContentType;
 import fr.ul.miage.reseau.exception.HttpStatus;
 import lombok.Builder;
-import org.apache.commons.lang3.StringUtils;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class Answer {
     private Request request;
     private HttpStatus httpStatus;
-    private String contentLength;
+    private int contentLength;
     private ContentType contentType;
+    private byte[] content;
 
     public static AnswerBuilder builder() {
         return new CustomAnswerBuilder();
@@ -18,7 +20,7 @@ public class Answer {
 
     public static class CustomAnswerBuilder extends AnswerBuilder {
         public Answer build() {
-            if (StringUtils.isBlank(super.contentLength)) {
+            if (super.contentLength == 0) {
                 throw new IllegalArgumentException("Le content length est obligatoire");
             }
 
@@ -34,6 +36,9 @@ public class Answer {
                 throw new IllegalArgumentException("Le code http est obligatoire");
             }
 
+            if (super.content == null) {
+                throw new IllegalArgumentException("Le contenu est obligatoire");
+            }
             return super.build();
         }
     }

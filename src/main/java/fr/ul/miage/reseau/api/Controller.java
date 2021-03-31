@@ -1,7 +1,8 @@
 package fr.ul.miage.reseau.api;
 
-import fr.ul.miage.reseau.exception.ApiException;
 import fr.ul.miage.reseau.exception.FilePathNotFoundException;
+import fr.ul.miage.reseau.exception.HttpStatus;
+import fr.ul.miage.reseau.parser.Answer;
 import fr.ul.miage.reseau.parser.Request;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +16,16 @@ import java.nio.file.Paths;
 @Slf4j
 @AllArgsConstructor
 public class Controller {
-    private OutputStream out;
+    private final OutputStream out;
 
-    public OutputStream dispatch(Request request) {
+    public void dispatch(Request request) {
         switch (request.getMethod()) {
             case "GET":
-                get(request);
+                try {
+                    get(request);
+                } catch (FilePathNotFoundException exception) {
+                    log.error(exception.getMessage());
+                }
                 break;
             case "POST":
                 post(request);
@@ -28,7 +33,6 @@ public class Controller {
             default:
                 log.error("Commande incorrecte");
         }
-        return out;
     }
 
     public void get(Request request) {
@@ -36,7 +40,6 @@ public class Controller {
         String filePath = "src/main/resources/" + fileName + request.getUrl();
         log.debug(filePath);
         Path path = Paths.get(filePath);
-
         DataInputStream in = null;
         try {
             in = new DataInputStream(new FileInputStream(System.getProperty("user.dir") + "/" + filePath));
@@ -45,34 +48,27 @@ public class Controller {
             throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
         }
         log.debug("Chemin : " + path.toString());
+
+
+        ContentType contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
+        HttpStatus httpStatus = null;
         byte[] content = null;
-
-        String contentType = null;
-        try {
-            contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
-        } catch (ApiException e) {
-            log.error(e.getMessage());
-            return;
-        }
-
         try {
             content = Files.readAllBytes(path);
-            feedWrite("HTTP/1.1 200 OK\r\n");
+            httpStatus = HttpStatus.OK;
         } catch (IOException exception) {
             log.error(exception.getMessage());
         }
 
-        feedWrite(("Content-Type: " + contentType + "\r\n"));
-
+        int contentLength = 0;
         try {
-            feedWrite(("Content-Length: " + in.available() + "\r\n"));
+            contentLength = in.available();
         } catch (IOException exception) {
             log.error(exception.getMessage());
         }
 
-
-        feedWrite("\r\n");
-        feedWrite(content);
+        Answer answerRequest = Answer.builder().request(request).contentLength(contentLength).contentType(contentType).httpStatus(httpStatus).content(content).build();
+        sendAnswer(answerRequest);
 
         try {
             in.close();
@@ -83,6 +79,20 @@ public class Controller {
 
     public OutputStream post(Request request) {
         return null;
+    }
+
+    public void sendAnswer(Answer answer) {
+        feedWrite("HTTP/1.1"+ answer.getHttpStatus().getValue() + " " + answer.getHttpStatus().getReasonPhrase() +"\r\n");
+        feedWrite(("Content-Type: " + answer.getContentType().getType() + "\r\n"));
+        feedWrite(("Content-Length: " + answer.getContentLength() + "\r\n"));
+        feedWrite("\r\n");
+        feedWrite(answer.getContent());
+        try {
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
     public void feedWrite(byte[] data) {

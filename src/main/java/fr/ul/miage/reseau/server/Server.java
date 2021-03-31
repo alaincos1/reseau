@@ -10,9 +10,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.StringTokenizer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 public class Server implements Runnable {
@@ -38,6 +35,7 @@ public class Server implements Runnable {
     }
 
     public void run() {
+
         log.debug("New thread");
         BufferedReader bfRead = null;
         InputStream in = null;
@@ -62,11 +60,8 @@ public class Server implements Runnable {
             log.error(e.getMessage());
         }
         Controller controller = new Controller(out);
-        out = controller.dispatch(request);
-
+        controller.dispatch(request);
         try {
-            out.flush();
-            out.close();
             in.close();
             bfRead.close();
             socket.close();

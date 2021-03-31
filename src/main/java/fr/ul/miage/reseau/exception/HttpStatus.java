@@ -1,8 +1,13 @@
 package fr.ul.miage.reseau.exception;
 
+import fr.ul.miage.reseau.api.ContentType;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.OutputStream;
 import java.util.Arrays;
 
+@Getter
 public enum HttpStatus {
     NOT_FOUND(404, "NOT_FOUND"),
     BAD_REQUEST(400, "BAD_REQUEST"),
