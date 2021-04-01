@@ -5,6 +5,7 @@ import fr.ul.miage.reseau.exception.HttpStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,10 +30,6 @@ public class Answer {
                 throw new IllegalArgumentException("Le content length est obligatoire");
             }
 
-            if (super.contentType == null) {
-                throw new IllegalArgumentException("Le content type est obligatoire");
-            }
-
             if (super.httpStatus == null) {
                 throw new IllegalArgumentException("Le code http est obligatoire");
             }
@@ -49,9 +46,12 @@ public class Answer {
     }
 
     public void send() {
-        feedWrite("HTTP/1.1" + httpStatus.getValue() + " " + httpStatus.getReasonPhrase() + "\r\n");
-        feedWrite(("Content-Type: " + contentType.getType() + "\r\n"));
+        String header = "HTTP/1.1 " + httpStatus.getValue() + " " + httpStatus.getReasonPhrase();
+        feedWrite(header);
         feedWrite(("Content-Length: " + contentLength + "\r\n"));
+        if (contentType != null) {
+            feedWrite(("Content-Type: " + contentType.getType() + "\r\n"));
+        }
         feedWrite("\r\n");
         feedWrite(content);
         try {

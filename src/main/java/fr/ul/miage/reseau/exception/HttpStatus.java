@@ -11,7 +11,7 @@ public enum HttpStatus {
     private final Integer value;
     private final String reasonPhrase;
 
-    private HttpStatus(Integer value, String reasonPhrase) {
+    HttpStatus(Integer value, String reasonPhrase) {
         this.value = value;
         this.reasonPhrase = reasonPhrase;
     }
