@@ -1,5 +1,6 @@
 package fr.ul.miage.reseau.api;
 
+import fr.ul.miage.reseau.exception.ApiException;
 import fr.ul.miage.reseau.exception.FilePathNotFoundException;
 import fr.ul.miage.reseau.exception.HttpStatus;
 import fr.ul.miage.reseau.parser.Answer;
@@ -42,7 +43,13 @@ public class Controller {
         Path path = Paths.get(filePath);
         DataInputStream in = null;
 
-        ContentType contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
+        ContentType contentType = null;
+        try {
+            contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
+        } catch (ApiException e) {
+            log.error(e.getMessage());
+            return;
+        }
 
         try {
             in = new DataInputStream(new FileInputStream(filePath));
