@@ -14,11 +14,11 @@ import java.io.OutputStream;
 @Getter
 @Slf4j
 public class Answer {
-    private HttpStatus httpStatus;
-    private int contentLength;
-    private ContentType contentType;
-    private byte[] content;
-    private OutputStream out;
+    private final HttpStatus httpStatus;
+    private final int contentLength;
+    private final ContentType contentType;
+    private final byte[] content;
+    private final OutputStream out;
 
     public static AnswerBuilder builder() {
         return new CustomAnswerBuilder();
