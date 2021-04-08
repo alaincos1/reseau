@@ -5,7 +5,6 @@ import fr.ul.miage.reseau.exception.HttpStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;

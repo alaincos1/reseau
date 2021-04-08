@@ -10,7 +10,7 @@ public abstract class ApiException extends RuntimeException {
     public ApiException(String errorCode, String message, OutputStream out, HttpStatus httpStatus) {
         super(message);
 
-        generateError(message, out, httpStatus);
+        generateError(errorCode + " " + message, out, httpStatus);
     }
 
     private void generateError(String message, OutputStream out, HttpStatus httpStatus) {

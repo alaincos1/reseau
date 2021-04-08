@@ -39,7 +39,7 @@ public class Controller {
 
     public void get(Request request) {
         String fileName = Domain.getFileName(request.getHost());
-        String filePath = repositoryPath + "/" +fileName + request.getUrl();
+        String filePath = repositoryPath + "/" + fileName + request.getUrl();
         Path path = Paths.get(filePath);
         DataInputStream in = null;
 
