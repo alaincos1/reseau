@@ -9,6 +9,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 @Slf4j
@@ -55,18 +57,17 @@ public class Server implements Runnable {
             bfRead = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             out = socket.getOutputStream();
 
-            int skip = 0;
-            while (request == null) {
-                request = Request.builder()
-                        .rawRequest(bfRead.readLine())
-                        .rawHost(bfRead.readLine())
-                        .out(out)
-                        .build();
-                skip++;
-                if (skip == 5) {
-                    return;
-                }
+            String line = bfRead.readLine();
+            List<String> list = new ArrayList<>();
+            while (line.length() > 0) {
+                list.add(line);
+                line = bfRead.readLine();
             }
+            request = Request.builder()
+                    .list(list)
+                    .out(out)
+                    .build();
+
         } catch (IOException e) {
             log.error(e.getMessage());
         }

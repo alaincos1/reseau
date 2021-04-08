@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.OutputStream;
+import java.util.List;
 
 @Getter
 @ToString
@@ -16,10 +17,10 @@ public class Request {
     private final String url;
     private final String version;
     private final String host;
+    private final String authorization;
     private final OutputStream out;
 
-    private final String rawRequest;
-    private final String rawHost;
+    private final List<String> list;
 
     public static RequestBuilder builder() {
         return new CustomRequestBuilder();
@@ -27,18 +28,18 @@ public class Request {
 
     public static class CustomRequestBuilder extends RequestBuilder {
         public Request build() {
-            if (StringUtils.isBlank(super.rawHost)
-                    || StringUtils.isBlank(super.rawRequest)
-                    || super.out == null) {
-                throw new InvalidRequestException(super.out);
-            }
-
-            String[] splittedRequest = super.rawRequest.split(" ");
-            super.host = super.rawHost.split(": ")[1];
-            super.method = splittedRequest[0];
-            super.url = splittedRequest[1].equals("/") ? "/index.html" : splittedRequest[1];
-            super.version = splittedRequest[2];
-            super.url = (super.url.equals("/") ? "/index.html" : super.url);
+            super.list.stream().forEach(line -> {
+                if (line.startsWith("GET")) {
+                    String[] splittedRequest = line.split(" ");
+                    super.method = splittedRequest[0];
+                    super.url = splittedRequest[1].equals("/") ? "/index.html" : splittedRequest[1];
+                    super.version = splittedRequest[2];
+                } else if (line.contains("Host: ")) {
+                    super.host = line.split(": ")[1];
+                } else if (line.contains("Authorization: ")) {
+                    super.authorization = line.split(" ")[2];
+                }
+            });
 
             if (StringUtils.isBlank(super.host)
                     || StringUtils.isBlank(super.method)

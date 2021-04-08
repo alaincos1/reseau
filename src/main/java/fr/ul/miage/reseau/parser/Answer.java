@@ -18,6 +18,7 @@ public class Answer {
     private final ContentType contentType;
     private final byte[] content;
     private final OutputStream out;
+    private final String authenticate;
 
     public static AnswerBuilder builder() {
         return new CustomAnswerBuilder();
@@ -50,6 +51,9 @@ public class Answer {
         feedWrite(("Content-Length: " + contentLength + "\r\n"));
         if (contentType != null) {
             feedWrite(("Content-Type: " + contentType.getType() + "\r\n"));
+        }
+        if (authenticate != null) {
+            feedWrite(("WWW-Authenticate: " + authenticate + "\r\n"));
         }
         feedWrite("\r\n");
         feedWrite(content);
