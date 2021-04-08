@@ -1,7 +1,6 @@
 package fr.ul.miage.reseau.server;
 
 import fr.ul.miage.reseau.api.Controller;
-import fr.ul.miage.reseau.parser.Parser;
 import fr.ul.miage.reseau.parser.Request;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,23 +49,28 @@ public class Server implements Runnable {
         BufferedReader bfRead = null;
         OutputStream out = null;
         Request request = null;
+        InetAddress adrLocale = null;
         try {
-            InetAddress adrLocale = InetAddress.getLocalHost();
+            adrLocale = InetAddress.getLocalHost();
             bfRead = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            out = socket.getOutputStream();
 
             int skip = 0;
             while (request == null) {
-                request = Parser.parseRequest(bfRead.readLine(), bfRead.readLine());
-                log.info("Ip du client : " + adrLocale.getHostAddress() + " Requête : " + request.toString());
+                request = Request.builder()
+                        .rawRequest(bfRead.readLine())
+                        .rawHost(bfRead.readLine())
+                        .out(out)
+                        .build();
                 skip++;
                 if (skip == 5) {
                     return;
                 }
             }
-            out = socket.getOutputStream();
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+        log.info("Ip du client : " + adrLocale.getHostAddress() + " Requête : " + request.toString());
         Controller controller = new Controller(out, repositoryPath);
         controller.dispatch(request);
         try {
