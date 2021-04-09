@@ -1,13 +1,14 @@
-package fr.ul.miage.reseau.exception;
+package fr.ul.miage.reseau.enumutils;
 
 import lombok.Getter;
 
 @Getter
 public enum HttpStatus {
-    NOT_FOUND(404, "NOT_FOUND"),
-    UNAUTHORIZED(401, "Unauthorized"),
+    OK(200, "OK"),
     BAD_REQUEST(400, "BAD_REQUEST"),
-    OK(200, "OK");
+    UNAUTHORIZED(401, "Unauthorized"),
+    FORBIDDEN(403, "Forbidden"),
+    NOT_FOUND(404, "NOT_FOUND");
 
     private final Integer value;
     private final String reasonPhrase;

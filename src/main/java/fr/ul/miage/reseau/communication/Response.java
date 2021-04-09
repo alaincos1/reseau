@@ -1,7 +1,7 @@
-package fr.ul.miage.reseau.parser;
+package fr.ul.miage.reseau.communication;
 
-import fr.ul.miage.reseau.api.ContentType;
-import fr.ul.miage.reseau.exception.HttpStatus;
+import fr.ul.miage.reseau.enumutils.ContentType;
+import fr.ul.miage.reseau.enumutils.HttpStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.io.OutputStream;
 @Builder
 @Getter
 @Slf4j
-public class Answer {
+public class Response {
     private final HttpStatus httpStatus;
     private final int contentLength;
     private final ContentType contentType;
@@ -20,12 +20,12 @@ public class Answer {
     private final OutputStream out;
     private final String authenticate;
 
-    public static AnswerBuilder builder() {
-        return new CustomAnswerBuilder();
+    public static ResponseBuilder builder() {
+        return new CustomResponseBuilder();
     }
 
-    public static class CustomAnswerBuilder extends AnswerBuilder {
-        public Answer build() {
+    public static class CustomResponseBuilder extends ResponseBuilder {
+        public Response build() {
             if (super.contentLength == 0) {
                 throw new IllegalArgumentException("Le content length est obligatoire");
             }

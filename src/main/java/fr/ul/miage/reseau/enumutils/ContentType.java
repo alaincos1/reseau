@@ -1,4 +1,4 @@
-package fr.ul.miage.reseau.api;
+package fr.ul.miage.reseau.enumutils;
 
 import fr.ul.miage.reseau.exception.ApiException;
 import fr.ul.miage.reseau.exception.ContentTypeNotFoundException;

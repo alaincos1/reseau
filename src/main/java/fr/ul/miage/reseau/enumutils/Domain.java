@@ -1,4 +1,4 @@
-package fr.ul.miage.reseau.api;
+package fr.ul.miage.reseau.enumutils;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

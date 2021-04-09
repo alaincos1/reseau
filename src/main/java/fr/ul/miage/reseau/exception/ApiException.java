@@ -1,6 +1,7 @@
 package fr.ul.miage.reseau.exception;
 
-import fr.ul.miage.reseau.parser.Answer;
+import fr.ul.miage.reseau.communication.Response;
+import fr.ul.miage.reseau.enumutils.HttpStatus;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.OutputStream;
@@ -14,12 +15,12 @@ public abstract class ApiException extends RuntimeException {
     }
 
     private void generateError(String message, OutputStream out, HttpStatus httpStatus) {
-        Answer answer = Answer.builder()
+        Response response = Response.builder()
                 .contentLength(message.length())
                 .content(message.getBytes())
                 .httpStatus(httpStatus)
                 .out(out)
                 .build();
-        answer.send();
+        response.send();
     }
 }

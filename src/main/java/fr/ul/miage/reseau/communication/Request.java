@@ -1,4 +1,4 @@
-package fr.ul.miage.reseau.parser;
+package fr.ul.miage.reseau.communication;
 
 import fr.ul.miage.reseau.exception.InvalidRequestException;
 import lombok.Builder;

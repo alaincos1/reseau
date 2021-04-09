@@ -1,7 +1,8 @@
 package fr.ul.miage.reseau.server;
 
 import fr.ul.miage.reseau.api.Controller;
-import fr.ul.miage.reseau.parser.Request;
+import fr.ul.miage.reseau.exception.ApiException;
+import fr.ul.miage.reseau.communication.Request;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -63,11 +64,14 @@ public class Server implements Runnable {
                 list.add(line);
                 line = bfRead.readLine();
             }
-            request = Request.builder()
-                    .list(list)
-                    .out(out)
-                    .build();
-
+            try {
+                request = Request.builder()
+                        .list(list)
+                        .out(out)
+                        .build();
+            }catch(ApiException e){
+                log.error(e.getMessage());
+            }
         } catch (IOException e) {
             log.error(e.getMessage());
         }

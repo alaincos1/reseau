@@ -1,10 +1,13 @@
 package fr.ul.miage.reseau.api;
 
+import fr.ul.miage.reseau.enumutils.ContentType;
+import fr.ul.miage.reseau.enumutils.Domain;
 import fr.ul.miage.reseau.exception.ApiException;
 import fr.ul.miage.reseau.exception.FilePathNotFoundException;
-import fr.ul.miage.reseau.exception.HttpStatus;
-import fr.ul.miage.reseau.parser.Answer;
-import fr.ul.miage.reseau.parser.Request;
+import fr.ul.miage.reseau.exception.ForbiddenException;
+import fr.ul.miage.reseau.enumutils.HttpStatus;
+import fr.ul.miage.reseau.communication.Response;
+import fr.ul.miage.reseau.communication.Request;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -23,14 +26,14 @@ import java.util.Scanner;
 @AllArgsConstructor
 public class Controller {
     private final OutputStream out;
-    private String repositoryPath;
+    private final String repositoryPath;
 
     public void dispatch(Request request) {
         switch (request.getMethod()) {
             case "GET":
                 try {
                     get(request);
-                } catch (FilePathNotFoundException exception) {
+                } catch (ApiException exception) {
                     log.error(exception.getMessage());
                 }
                 break;
@@ -86,26 +89,29 @@ public class Controller {
         } catch (IOException exception) {
             log.error(exception.getMessage());
         }
-
-        if(authRequired) {
-            Answer answerRequest = Answer.builder()
-                    .contentLength(contentLength)
-                    .contentType(contentType)
-                    .httpStatus(HttpStatus.UNAUTHORIZED)
-                    .content("".getBytes())
-                    .out(out)
-                    .authenticate("Basic realm=\"Authentification\"")
-                    .build();
-            answerRequest.send();
-        }else{
-            Answer answerRequest = Answer.builder()
+        if(authRequired && !StringUtils.isBlank(request.getAuthorization())) {
+            throw new ForbiddenException(fileName + request.getUrl(), out);
+        }
+        else if(authRequired && StringUtils.isBlank(request.getAuthorization())) {
+                Response responseRequest = Response.builder()
+                        .contentLength(contentLength)
+                        .contentType(contentType)
+                        .httpStatus(HttpStatus.UNAUTHORIZED)
+                        .content("".getBytes())
+                        .out(out)
+                        .authenticate("Basic realm=\"Authentification\"")
+                        .build();
+                responseRequest.send();
+        }
+        else{
+            Response responseRequest = Response.builder()
                     .contentLength(contentLength)
                     .contentType(contentType)
                     .httpStatus(httpStatus)
                     .content(content)
                     .out(out)
                     .build();
-            answerRequest.send();
+            responseRequest.send();
         }
 
         try {
