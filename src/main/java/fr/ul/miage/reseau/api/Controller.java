@@ -1,7 +1,6 @@
 package fr.ul.miage.reseau.api;
 
 import fr.ul.miage.reseau.enumutils.ContentType;
-import fr.ul.miage.reseau.enumutils.Domain;
 import fr.ul.miage.reseau.exception.ApiException;
 import fr.ul.miage.reseau.exception.FilePathNotFoundException;
 import fr.ul.miage.reseau.exception.ForbiddenException;
@@ -20,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Scanner;
 
 @Slf4j
@@ -27,6 +27,7 @@ import java.util.Scanner;
 public class Controller {
     private final OutputStream out;
     private final String repositoryPath;
+    private final HashMap<String, String> domains;
 
     public void dispatch(Request request) {
         switch (request.getMethod()) {
@@ -46,7 +47,7 @@ public class Controller {
     }
 
     public void get(Request request) {
-        String fileName = Domain.getFileName(request.getHost());
+        String fileName = getFileName(request.getHost());
         String filePath = repositoryPath + "/" + fileName + request.getUrl();
         Path path = Paths.get(filePath);
         DataInputStream in = null;
@@ -119,6 +120,10 @@ public class Controller {
         } catch (IOException exception) {
             log.error(exception.getMessage());
         }
+    }
+
+    private String getFileName(String host) {
+        return domains.get(host);
     }
 
     // count = 1 à l'appel  et  path = filename + "/" + url MAIS SANS /file.ext

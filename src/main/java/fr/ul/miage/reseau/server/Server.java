@@ -10,15 +10,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Slf4j
 public class Server implements Runnable {
     private final Socket socket;
     private static int port;
     private static String repositoryPath;
+    private static HashMap<String, String> domains;
 
     public Server(Socket socket) {
         this.socket = socket;
@@ -45,6 +44,11 @@ public class Server implements Runnable {
         properties.load(new FileInputStream(file));
         port = Integer.parseInt(properties.getProperty("port"));
         repositoryPath = properties.getProperty("repository");
+        domains = new HashMap<>();
+        String[] rawDomains = properties.getProperty("domain").split(",");
+        for(String domain : rawDomains){
+            domains.put(domain.split(":")[0],domain.split(":")[1]);
+        }
     }
 
     public void run() {
@@ -76,7 +80,7 @@ public class Server implements Runnable {
             log.error(e.getMessage());
         }
         log.info("Ip du client : " + adrLocale.getHostAddress() + " Requête : " + request.toString());
-        Controller controller = new Controller(out, repositoryPath);
+        Controller controller = new Controller(out, repositoryPath, domains);
         controller.dispatch(request);
         try {
             bfRead.close();
