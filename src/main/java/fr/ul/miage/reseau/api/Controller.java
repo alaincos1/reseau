@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Scanner;
 
@@ -65,7 +64,12 @@ public class Controller {
         }
         log.debug("Chemin : " + path.toString());
 
-        boolean authRequired = checkAnyHtpsswd(request.getAuthorization(), fileName, request.getUrl());
+        StringBuilder url = new StringBuilder();
+        url.append(fileName);
+        for(int i = 0; i < request.getUrl().split("/").length-1; i++){
+            url.append("/").append(request.getUrl().split("/")[i]);
+        }
+        boolean authRequired = checkAuthRecursiv(request.getAuthorization(), url.toString(), 1);
 
         HttpStatus httpStatus = null;
         byte[] content = null;
@@ -111,6 +115,32 @@ public class Controller {
         }
     }
 
+    // count = 1 à l'appel  et  path = filename + "/" + url MAIS SANS /file.ext
+    private boolean checkAuthRecursiv(String auth, String path, int count) {
+        if(path.split("/").length == count-1){
+            return false;
+        }
+        else {
+            StringBuilder pathTemp = new StringBuilder();
+            for(int i = 0; i<count; i++){
+                pathTemp.append("/").append(path.split("/")[i]);
+            }
+            File f = new File(repositoryPath + "/" + pathTemp + "/.htpasswd");
+            if (!f.exists()) { // le htpsswd n'existe pas
+                return checkAuthRecursiv(auth,path,count+1);
+            }
+            else { // le htpsswd existe
+                if (!StringUtils.isBlank(auth)) {
+                    if(checkAuthentification(auth, f)){
+                        return true;
+                    }
+                    return checkAuthRecursiv(auth,path,count+1);
+                }
+                return true;
+            }
+        }
+    }
+
     private boolean checkAuthentification(String auth, File f) {
         byte[] rawIdPw = Base64.getDecoder().decode(auth);
         String decodedIdPw = new String(rawIdPw);
@@ -136,17 +166,6 @@ public class Controller {
             System.out.println(e.getMessage());
         }
         return true;
-    }
-
-    private boolean checkAnyHtpsswd(String auth, String fileName, String url) {
-        File f = new File(repositoryPath + "/" + fileName+ "/.htpasswd");
-        if(f.exists()) {
-            if(!StringUtils.isBlank(auth)){
-                return checkAuthentification(auth, f);
-            }
-            return true;
-        }
-        return false;
     }
 
     public OutputStream post(Request request) {
