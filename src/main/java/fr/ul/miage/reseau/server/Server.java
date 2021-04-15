@@ -17,6 +17,7 @@ public class Server implements Runnable {
     private final Socket socket;
     private static int port;
     private static String repositoryPath;
+    private static int repositoryMenu;
     private static HashMap<String, String> domains;
 
     public Server(Socket socket) {
@@ -44,6 +45,7 @@ public class Server implements Runnable {
         properties.load(new FileInputStream(file));
         port = Integer.parseInt(properties.getProperty("port"));
         repositoryPath = properties.getProperty("repository");
+        repositoryMenu = Integer.parseInt(properties.getProperty("repositoryMenu"));
         domains = new HashMap<>();
         String[] rawDomains = properties.getProperty("domain").split(",");
         for(String domain : rawDomains){
@@ -80,7 +82,7 @@ public class Server implements Runnable {
             log.error(e.getMessage());
         }
         log.info("Ip du client : " + adrLocale.getHostAddress() + " Requête : " + request.toString());
-        Controller controller = new Controller(out, repositoryPath, domains);
+        Controller controller = new Controller(out, repositoryPath, domains, repositoryMenu);
         controller.dispatch(request);
         try {
             bfRead.close();

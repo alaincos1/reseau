@@ -7,6 +7,7 @@ import fr.ul.miage.reseau.exception.ForbiddenException;
 import fr.ul.miage.reseau.enumutils.HttpStatus;
 import fr.ul.miage.reseau.communication.Response;
 import fr.ul.miage.reseau.communication.Request;
+import fr.ul.miage.reseau.html.HtmlGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -14,13 +15,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 @Slf4j
 @AllArgsConstructor
@@ -28,6 +28,7 @@ public class Controller {
     private final OutputStream out;
     private final String repositoryPath;
     private final HashMap<String, String> domains;
+    private final int repositoryMenu;
 
     public void dispatch(Request request) {
         switch (request.getMethod()) {
@@ -48,50 +49,75 @@ public class Controller {
 
     public void get(Request request) {
         String fileName = getFileName(request.getHost());
-        String filePath = repositoryPath + "/" + fileName + request.getUrl();
+        String newUrl = deleteDomain(request.getUrl(), request.getHost());
+        String filePath = repositoryPath + "/" + fileName + newUrl;
         Path path = Paths.get(filePath);
+
         DataInputStream in = null;
-
         ContentType contentType = null;
-        try {
-            contentType = ContentType.getContentType(FilenameUtils.getExtension(request.getUrl()), out);
-        } catch (ApiException e) {
-            log.error(e.getMessage());
-            return;
+        HttpStatus httpStatus = null;
+        byte[] content = null;
+        int contentLength = 0;
+
+        if(StringUtils.isBlank(FilenameUtils.getExtension(newUrl)) && repositoryMenu == 1){
+            //TODO: dans une méthode
+
+            contentType = ContentType.HTML;
+            httpStatus = HttpStatus.OK;
+            File folder = new File(filePath);
+            if (folder.isDirectory()) {
+                List<File> files = Arrays.asList(folder.listFiles().clone());
+                content = HtmlGenerator.renderPathFinderHtml(files, request.getHost() + newUrl).getBytes();
+                contentLength = content.length;
+            }
+            else {
+                throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
+            }
+
+        }else {
+            //TODO: dans une méthode
+
+            try {
+                in = new DataInputStream(new FileInputStream(filePath));
+            } catch (FileNotFoundException exception) {
+                log.error(exception.getMessage());
+                throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
+            }
+            log.debug("Chemin : " + path.toString());
+
+            try {
+                contentType = ContentType.getContentType(FilenameUtils.getExtension(newUrl), out);
+            } catch (ApiException e) {
+                log.error(e.getMessage());
+                return;
+            }
+
+            try {
+                content = Files.readAllBytes(path);
+                httpStatus = HttpStatus.OK;
+            } catch (IOException exception) {
+                log.error(exception.getMessage());
+            }
+
+            try {
+                contentLength = in.available();
+                in.close();
+            } catch (IOException exception) {
+                log.error(exception.getMessage());
+            }
         }
 
-        try {
-            in = new DataInputStream(new FileInputStream(filePath));
-        } catch (FileNotFoundException exception) {
-            log.error(exception.getMessage());
-            throw new FilePathNotFoundException(FilenameUtils.getName(filePath), out);
-        }
-        log.debug("Chemin : " + path.toString());
-
+        //TODO: dans une méthode
         StringBuilder url = new StringBuilder();
         url.append(fileName);
-        for(int i = 0; i < request.getUrl().split("/").length-1; i++){
-            url.append("/").append(request.getUrl().split("/")[i]);
+        for (int i = 0; i < newUrl.split("/").length - 1; i++) {
+            url.append("/").append(newUrl.split("/")[i]);
         }
         boolean authRequired = checkAuthRecursiv(request.getAuthorization(), url.toString(), 1);
 
-        HttpStatus httpStatus = null;
-        byte[] content = null;
-        try {
-            content = Files.readAllBytes(path);
-            httpStatus = HttpStatus.OK;
-        } catch (IOException exception) {
-            log.error(exception.getMessage());
-        }
-
-        int contentLength = 0;
-        try {
-            contentLength = in.available();
-        } catch (IOException exception) {
-            log.error(exception.getMessage());
-        }
+        //TODO: dans une méthode
         if(authRequired && !StringUtils.isBlank(request.getAuthorization())) {
-            throw new ForbiddenException(fileName + request.getUrl(), out);
+            throw new ForbiddenException(fileName + newUrl, out);
         }
         else if(authRequired && StringUtils.isBlank(request.getAuthorization())) {
                 Response responseRequest = Response.builder()
@@ -114,12 +140,13 @@ public class Controller {
                     .build();
             responseRequest.send();
         }
+    }
 
-        try {
-            in.close();
-        } catch (IOException exception) {
-            log.error(exception.getMessage());
+    private String deleteDomain(String url, String host) {
+        if(url.startsWith("/" + host)){
+            return url.replaceFirst("/" + host,"");
         }
+        return url;
     }
 
     private String getFileName(String host) {
