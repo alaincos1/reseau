@@ -24,6 +24,11 @@ public class Server implements Runnable {
         this.socket = socket;
     }
 
+    /*
+     * Création des socket sur le port demandé, lancement d'un thread par socket
+     *
+     * @param args
+     */
     public static void main(String[] args) throws IOException {
         getProperties();
         log.debug("Main launched with port " + port);
@@ -39,6 +44,10 @@ public class Server implements Runnable {
         }
     }
 
+    /*
+     * Lecture du fichier properties et stockage des données
+     *
+     */
     private static void getProperties() throws IOException {
         File file = new File("config.properties");
         Properties properties = new Properties();
@@ -53,6 +62,10 @@ public class Server implements Runnable {
         }
     }
 
+    /*
+     * Méthode d'exécution des threads et réception de la requête, Appel du controller
+     *
+     */
     public void run() {
         log.debug("New thread");
         BufferedReader bfRead = null;

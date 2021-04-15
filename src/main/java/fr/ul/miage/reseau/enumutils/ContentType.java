@@ -27,14 +27,13 @@ public enum ContentType {
     private final String format;
     private final String type;
 
-    public static String getType(String extension, OutputStream out) throws ApiException {
-        return Arrays.asList(values()).stream()
-                .filter(contentType -> StringUtils.equalsAnyIgnoreCase(contentType.format, extension))
-                .map(contentType -> contentType.type)
-                .findFirst()
-                .orElseThrow(() -> new ContentTypeNotFoundException(extension, out));
-    }
-
+    /*
+     * Permet de récupérer un content-type par son extension
+     *
+     * @param extension .html, .css, .jpg ...
+     * @param out
+     * @return le content-type
+     */
     public static ContentType getContentType(String extension, OutputStream out) throws ApiException {
         return Arrays.asList(values()).stream()
                 .filter(contentType -> StringUtils.equalsAnyIgnoreCase(contentType.format, extension))

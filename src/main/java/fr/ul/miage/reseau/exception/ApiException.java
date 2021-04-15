@@ -16,6 +16,13 @@ public abstract class ApiException extends RuntimeException {
         generateError(errorCode + " " + message, out, httpStatus);
     }
 
+    /*
+     * Génère la réponse à une erreur et l'envoie. Bonjour monsieur, on espère que vous lisez on a eu du mal quand même !
+     *
+     * @param message message d'erreur
+     * @param out
+     * @param httpStatus le statut de l'erreur
+     */
     private void generateError(String message, OutputStream out, HttpStatus httpStatus) {
         String docHtml = HtmlGenerator.renderExceptionHtml(message,httpStatus);
         Response response = Response.builder()

@@ -24,6 +24,11 @@ public class Response {
         return new CustomResponseBuilder();
     }
 
+    /*
+     * Vérifie que l'objet Response est valide pour l'envoi
+     *
+     * @return l'élément construit
+     */
     public static class CustomResponseBuilder extends ResponseBuilder {
         public Response build() {
             if (super.contentLength == 0) {
@@ -38,13 +43,22 @@ public class Response {
                 throw new IllegalArgumentException("Le contenu est obligatoire");
             }
 
+            if (super.contentType == null) {
+                throw new IllegalArgumentException("Le content-type est obligatoire");
+            }
+
             if (super.out == null) {
                 throw new IllegalArgumentException("L'outpustream est obligatoire");
             }
+
             return super.build();
         }
     }
 
+    /*
+     * Envoi de la réponse au client
+     *
+     */
     public void send() {
         String header = "HTTP/1.1 " + httpStatus.getValue() + " " + httpStatus.getReasonPhrase();
         feedWrite(header);
@@ -65,6 +79,11 @@ public class Response {
         }
     }
 
+    /*
+     * Ecriture dans le outpustream
+     *
+     * @param data
+     */
     public void feedWrite(byte[] data) {
         try {
             out.write(data);
@@ -73,6 +92,11 @@ public class Response {
         }
     }
 
+    /*
+     * Ecriture dans le outpustream
+     *
+     * @param data
+     */
     public void feedWrite(String data) {
         feedWrite(data.getBytes());
     }

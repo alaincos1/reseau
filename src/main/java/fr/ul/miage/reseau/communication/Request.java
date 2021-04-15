@@ -26,6 +26,11 @@ public class Request {
         return new CustomRequestBuilder();
     }
 
+    /*
+     * Vérifie que l'objet Request est valide pour le serveur
+     *
+     * @return l'élément construit
+     */
     public static class CustomRequestBuilder extends RequestBuilder {
         public Request build() {
             super.list.stream().forEach(line -> {
@@ -39,6 +44,7 @@ public class Request {
                 } else if (line.contains("Authorization: ")) {
                     super.authorization = line.split(" ")[2];
                 }
+
             });
 
             if (StringUtils.isBlank(super.host)
