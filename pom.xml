@@ -81,10 +81,44 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>win</id>
                         <phase>package</phase>
                         <goals>
                             <goal>assemble</goal>
                         </goals>
+                        <configuration>
+                            <assembleDirectory>${project.bindist.dir}</assembleDirectory>
+                            <repositoryLayout>flat</repositoryLayout>
+                            <programs>
+                                <program>
+                                    <platforms>
+                                        <platform>windows</platform>
+                                    </platforms>
+                                    <mainClass>${project.main.classname}</mainClass>
+                                    <id>${project.bin.appname}</id>
+                                </program>
+                            </programs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unix</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                        <configuration>
+                            <assembleDirectory>${project.bindist.dir}</assembleDirectory>
+                            <repositoryLayout>flat</repositoryLayout>
+                            <programs>
+                                <program>
+                                    <platforms>
+                                        <platform>unix</platform>
+                                    </platforms>
+                                    <mainClass>${project.main.classname}</mainClass>
+                                    <id>${project.bin.appname}</id>
+                                </program>
+                            </programs>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
